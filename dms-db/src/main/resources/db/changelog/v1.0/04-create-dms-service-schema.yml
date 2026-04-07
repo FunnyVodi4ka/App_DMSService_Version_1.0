@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_dms_service_schema
+      author: Aleksandr_Bratchin
+      changes:
+        - sqlFile:
+            path: classpath:db/changelog/v1.0/sql/create-dms-service-schema.sql

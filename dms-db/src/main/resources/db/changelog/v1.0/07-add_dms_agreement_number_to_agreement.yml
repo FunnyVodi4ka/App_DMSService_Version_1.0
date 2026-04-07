@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_dms_agreement_value_to_agreement
+      author: Valerii_Remizov
+      changes:
+        - sqlFile:
+            path: db/changelog/v1.0/sql/add_dms_agreement_number_to_agreement.sql

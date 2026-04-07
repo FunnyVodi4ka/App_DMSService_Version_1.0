@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-new_insurance_contract_status-enum
+      author: Ivan Sakharov
+      changes:
+        - sql:
+            sql: |
+              CREATE TYPE new_insurance_contract_status
+              AS ENUM ('PENDING', 'SIGNED', 'PAID', 'CANCELLED', 'EXPIRED')
+      rollback:
+        - sql:
+            sql:
+              DROP TYPE new_insurance_contract_status;
+
+  - changeSet:
+      id: transition-to-new-enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: HALT
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'new_insurance_contract_status'
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE insurance_contracts
+                ALTER COLUMN status TYPE new_insurance_contract_status
+                USING(
+                  CASE (status::text)
+                    WHEN 'APPROVED' THEN 'SIGNED'
+                    WHEN 'REJECTED' THEN 'CANCELLED'
+                    ELSE status::text
+                  END
+              )::new_insurance_contract_status
+
+      rollback:
+        - sql:
+            sql: |
+              ALTER TABLE insurance_contracts
+                ALTER COLUMN status TYPE insurance_contract_status
+                USING (
+                  CASE (status::text)
+                    WHEN 'SIGNED'  THEN 'APPROVED'
+                    WHEN 'PAID'    THEN 'APPROVED'   -- при необходимости поправьте
+                    WHEN 'EXPIRED' THEN 'CANCELLED'  -- при необходимости поправьте
+                    ELSE status::text
+                  END
+                )::insurance_contract_status;
+
+  - changeSet:
+      id: drop-insurance_contract_status-enum
+      author: Ivan Sakharov
+      validCheckSum: ANY
+      changes:
+        - sql:
+            sql: DROP TYPE IF EXISTS insurance_contract_status CASCADE;
+      rollback:
+        - sql:
+            sql: |
+              CREATE TYPE insurance_contract_status
+              AS ENUM ('PENDING', 'APPROVED', 'CANCELLED', 'REJECTED');
+              ALTER TYPE insurance_contract_status OWNER TO admin;
+
+  - changeSet:
+      id: rename-new_insurance_contract_status-enum
+      author: Ivan Sakharov
+      validCheckSum: ANY
+      preConditions:
+        - onFail: HALT
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'new_insurance_contract_status'
+      changes:
+        - sql:
+            sql:
+              ALTER TYPE new_insurance_contract_status RENAME TO insurance_contract_status;
+              ALTER TYPE insurance_contract_status OWNER TO admin;

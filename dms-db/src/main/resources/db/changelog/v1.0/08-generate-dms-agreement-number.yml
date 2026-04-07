@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: generate_dms_agreement_number_sql
+      author: Valerii_Remizov
+      changes:
+        - sqlFile:
+            path: classpath:db/changelog/v1.0/sql/generate-dms-agreement-number.sql
+            splitStatements: false

@@ -1,0 +1,990 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1764234596120-63
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: dms_claims
+            baseTableSchemaName: dms_service
+            constraintName: fk_claims_app
+  - changeSet:
+      id: 1764234596120-64
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: contracts_persons
+            baseTableSchemaName: dms_service
+            constraintName: fk_contracts_persons_insurance_contracts
+  - changeSet:
+      id: 1764234596120-65
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: contracts_persons
+            baseTableSchemaName: dms_service
+            constraintName: fk_contracts_persons_insured_persons
+  - changeSet:
+      id: 1764234596120-66
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: statuses_history_claim_applications
+            baseTableSchemaName: dms_service
+            constraintName: fk_hist_claim_app
+  - changeSet:
+      id: 1764234596120-67
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: statuses_history_insurance_contracts
+            baseTableSchemaName: dms_service
+            constraintName: fk_hist_contract
+  - changeSet:
+      id: 1764234596120-68
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: statuses_history_dms_claims
+            baseTableSchemaName: dms_service
+            constraintName: fk_hist_dms_claim
+  - changeSet:
+      id: 1764234596120-69
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: statuses_history_insurance_applications
+            baseTableSchemaName: dms_service
+            constraintName: fk_hist_insurance_app
+  - changeSet:
+      id: 1764234596120-70
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: statuses_history_policies
+            baseTableSchemaName: dms_service
+            constraintName: fk_hist_policy
+  - changeSet:
+      id: 1764234596120-71
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: insurance_contracts
+            baseTableSchemaName: dms_service
+            constraintName: fk_insurance_contracts_policies
+  - changeSet:
+      id: 1764234596120-72
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: insured_persons
+            baseTableSchemaName: dms_service
+            constraintName: fk_insured_persons_identity_documents
+  - changeSet:
+      id: 1764234596120-73
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: medical_facilities
+            baseTableSchemaName: dms_service
+            constraintName: fk_medfac_policy
+  - changeSet:
+      id: 1764234596120-74
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: payment_orders
+            baseTableSchemaName: dms_service
+            constraintName: fk_payment_claim
+  - changeSet:
+      id: 1764234596120-75
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: payment_orders
+            baseTableSchemaName: dms_service
+            constraintName: fk_payment_contract
+  - changeSet:
+      id: 1764234596120-76
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: payment_orders
+            baseTableSchemaName: dms_service
+            constraintName: fk_payment_facility
+  - changeSet:
+      id: 1764234596120-77
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: dms_programs
+            baseTableSchemaName: dms_service
+            constraintName: fk_programs_flags_type
+  - changeSet:
+      id: 1764234596120-19
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_claim_applications_documents
+                  name: claim_application_document_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: claim_application_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: document_id
+                  type: UUID
+            schemaName: dms_service
+            tableName: claim_applications_documents
+  - changeSet:
+      id: 1764234596120-20
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_documents
+                  name: document_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: type
+                  type: VARCHAR(150)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: document_url
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  name: comment
+                  type: TEXT
+            schemaName: dms_service
+            tableName: documents
+  - changeSet:
+      id: 1764234596120-21
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_insured_persons_documents
+                  name: insured_person_document_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: insured_person_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: document_id
+                  type: UUID
+            schemaName: dms_service
+            tableName: insured_persons_documents
+  - changeSet:
+      id: 1764234596120-22
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_policies_medical_facilities
+                  name: policy_medical_facility_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: policy_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: medical_facility_id
+                  type: UUID
+            schemaName: dms_service
+            tableName: policies_medical_facilities
+  - changeSet:
+      id: 1764234596120-23
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: amount
+                  type: DECIMAL(10, 2)
+              - column:
+                  name: bank_account_number
+                  type: VARCHAR(255)
+              - column:
+                  name: comment
+                  type: TEXT
+              - column:
+                  name: employee_id
+                  type: UUID
+              - column:
+                  name: insured_person_id
+                  type: UUID
+            schemaName: dms_service
+            tableName: claim_applications
+  - changeSet:
+      id: 1764234596120-24
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: amount
+            schemaName: dms_service
+            tableName: claim_applications
+  - changeSet:
+      id: 1764234596120-26
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: bank_account_number
+            schemaName: dms_service
+            tableName: claim_applications
+  - changeSet:
+      id: 1764234596120-27
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: bank_account_number
+                  type: VARCHAR(255)
+              - column:
+                  name: created_at
+                  type: DATE
+              - column:
+                  name: insurance_contract_url
+                  type: VARCHAR(255)
+              - column:
+                  name: issued_at
+                  type: DATE
+              - column:
+                  name: paid_at
+                  type: DATE
+              - column:
+                  name: total_amount
+                  type: DECIMAL(10, 2)
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-28
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: bank_account_number
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-31
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: created_at
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-33
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: employee_id
+            schemaName: dms_service
+            tableName: claim_applications
+  - changeSet:
+      id: 1764234596120-34
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: insurance_application_id
+                  type: UUID
+            schemaName: dms_service
+            tableName: insured_persons
+  - changeSet:
+      id: 1764234596120-35
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: insurance_application_id
+            schemaName: dms_service
+            tableName: insured_persons
+  - changeSet:
+      id: 1764234596120-36
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: insurance_contract_id
+                  type: UUID
+              - column:
+                  name: policy_url
+                  type: VARCHAR(255)
+            schemaName: dms_service
+            tableName: policies
+  - changeSet:
+      id: 1764234596120-37
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: insurance_contract_id
+            schemaName: dms_service
+            tableName: policies
+  - changeSet:
+      id: 1764234596120-39
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: insurance_contract_url
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-41
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: insured_person_id
+            schemaName: dms_service
+            tableName: claim_applications
+  - changeSet:
+      id: 1764234596120-43
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: issued_at
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-45
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: paid_at
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-47
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: policy_url
+            schemaName: dms_service
+            tableName: policies
+  - changeSet:
+      id: 1764234596120-48
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: price
+                  type: DECIMAL(10, 2)
+            schemaName: dms_service
+            tableName: dms_programs
+  - changeSet:
+      id: 1764234596120-49
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - sql:
+              sql: UPDATE dms_service.dms_programs SET price = 0.00 WHERE price IS NULL;
+        - addNotNullConstraint:
+            columnName: price
+            schemaName: dms_service
+            tableName: dms_programs
+  - changeSet:
+      id: 1764234596120-51
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addNotNullConstraint:
+            columnName: total_amount
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-52
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: insurance_application_id
+            constraintName: uc_insurance_contracts_insurance_application
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-53
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: insurance_contract_id
+            constraintName: uc_policies_insurance_contract
+            schemaName: dms_service
+            tableName: policies
+  - changeSet:
+      id: 1764234596120-54
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: claim_application_id
+            baseTableName: claim_applications_documents
+            baseTableSchemaName: dms_service
+            constraintName: FK_CLAIM_APPLICATIONS_DOCUMENTS_ON_CLAIM_APPLICATION
+            referencedColumnNames: claim_application_id
+            referencedTableName: claim_applications
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-55
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: document_id
+            baseTableName: claim_applications_documents
+            baseTableSchemaName: dms_service
+            constraintName: FK_CLAIM_APPLICATIONS_DOCUMENTS_ON_DOCUMENT
+            referencedColumnNames: document_id
+            referencedTableName: documents
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-56
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: insured_person_id
+            baseTableName: claim_applications
+            baseTableSchemaName: dms_service
+            constraintName: FK_CLAIM_APPLICATIONS_ON_INSURED_PERSON
+            referencedColumnNames: insured_person_id
+            referencedTableName: insured_persons
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-57
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: document_id
+            baseTableName: insured_persons_documents
+            baseTableSchemaName: dms_service
+            constraintName: FK_INSURED_PERSONS_DOCUMENTS_ON_DOCUMENT
+            referencedColumnNames: document_id
+            referencedTableName: documents
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-58
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: insured_person_id
+            baseTableName: insured_persons_documents
+            baseTableSchemaName: dms_service
+            constraintName: FK_INSURED_PERSONS_DOCUMENTS_ON_INSURED_PERSON
+            referencedColumnNames: insured_person_id
+            referencedTableName: insured_persons
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-59
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: insurance_application_id
+            baseTableName: insured_persons
+            baseTableSchemaName: dms_service
+            constraintName: FK_INSURED_PERSONS_ON_INSURANCE_APPLICATION
+            referencedColumnNames: insurance_application_id
+            referencedTableName: insurance_applications
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-60
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: medical_facility_id
+            baseTableName: policies_medical_facilities
+            baseTableSchemaName: dms_service
+            constraintName: FK_POLICIES_MEDICAL_FACILITIES_ON_MEDICAL_FACILITY
+            referencedColumnNames: medical_facility_id
+            referencedTableName: medical_facilities
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-61
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: policy_id
+            baseTableName: policies_medical_facilities
+            baseTableSchemaName: dms_service
+            constraintName: FK_POLICIES_MEDICAL_FACILITIES_ON_POLICY
+            referencedColumnNames: policy_id
+            referencedTableName: policies
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-62
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: insurance_contract_id
+            baseTableName: policies
+            baseTableSchemaName: dms_service
+            constraintName: FK_POLICIES_ON_INSURANCE_CONTRACT
+            referencedColumnNames: insurance_contract_id
+            referencedTableName: insurance_contracts
+            referencedTableSchemaName: dms_service
+  - changeSet:
+      id: 1764234596120-82
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: clients_companies
+  - changeSet:
+      id: 1764234596120-83
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: contracts_persons
+  - changeSet:
+      id: 1764234596120-86
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: dms_claims
+  - changeSet:
+      id: 1764234596120-87
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: dms_programs_flags
+  - changeSet:
+      id: 1764234596120-88
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: identity_documents
+  - changeSet:
+      id: 1764234596120-89
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: payment_orders
+  - changeSet:
+      id: 1764234596120-90
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: shedlock
+  - changeSet:
+      id: 1764234596120-91
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: statuses_history_claim_applications
+  - changeSet:
+      id: 1764234596120-92
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: statuses_history_dms_claims
+  - changeSet:
+      id: 1764234596120-93
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: statuses_history_insurance_applications
+  - changeSet:
+      id: 1764234596120-94
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: statuses_history_insurance_contracts
+  - changeSet:
+      id: 1764234596120-95
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropTable:
+            cascadeConstraints: true
+            schemaName: dms_service
+            tableName: statuses_history_policies
+  - changeSet:
+      id: 1764234596120-96
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: client_id
+            schemaName: dms_service
+            tableName: insured_persons
+        - dropColumn:
+            columnName: identity_document_id
+            schemaName: dms_service
+            tableName: insured_persons
+        - dropColumn:
+            columnName: insured_person_type
+            schemaName: dms_service
+            tableName: insured_persons
+        - dropColumn:
+            columnName: is_external
+            schemaName: dms_service
+            tableName: insured_persons
+        - dropColumn:
+            columnName: is_self
+            schemaName: dms_service
+            tableName: insured_persons
+        - dropColumn:
+            columnName: updated_at
+            schemaName: dms_service
+            tableName: insured_persons
+        - dropColumn:
+            columnName: gender
+            schemaName: dms_service
+            tableName: insured_persons
+  - changeSet:
+      id: 1764234596120-97
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - sql:
+            sql: |
+              DROP TRIGGER IF EXISTS trg_dms_programs_flags ON dms_service.dms_programs;
+              DROP FUNCTION IF EXISTS dms_service.set_program_flags_from_type();
+        - dropColumn:
+            columnName: cost
+            schemaName: dms_service
+            tableName: dms_programs
+  - changeSet:
+      id: 1764234596120-98
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: expired_at
+            schemaName: dms_service
+            tableName: insurance_contracts
+        - dropColumn:
+            columnName: mongo_id
+            schemaName: dms_service
+            tableName: insurance_contracts
+        - dropColumn:
+            columnName: name
+            schemaName: dms_service
+            tableName: insurance_contracts
+        - dropColumn:
+            columnName: policy_id
+            schemaName: dms_service
+            tableName: insurance_contracts
+        - dropColumn:
+            columnName: start_at
+            schemaName: dms_service
+            tableName: insurance_contracts
+        - dropColumn:
+            columnName: status
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-103
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: medical_checkup
+            schemaName: dms_service
+            tableName: claim_applications
+        - dropColumn:
+            columnName: mongo_id
+            schemaName: dms_service
+            tableName: claim_applications
+        - dropColumn:
+            columnName: status
+            schemaName: dms_service
+            tableName: claim_applications
+  - changeSet:
+      id: 1764234596120-106
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: mongo_id
+            schemaName: dms_service
+            tableName: policies
+        - dropColumn:
+            columnName: status
+            schemaName: dms_service
+            tableName: policies
+  - changeSet:
+      id: 1764234596120-109
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: policy_id
+            schemaName: dms_service
+            tableName: medical_facilities
+        - dropColumn:
+            columnName: type
+            schemaName: dms_service
+            tableName: medical_facilities
+  - changeSet:
+      id: 1764234596120-112
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropSequence:
+            schemaName: dms_service
+            sequenceName: dms_agreement_number_sequence
+  - changeSet:
+      id: 1764234596120-1
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: client_type
+            schemaName: dms_service
+            tableName: clients
+  - changeSet:
+      id: 1764234596120-2
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: client_type
+                  type: VARCHAR(255)
+            schemaName: dms_service
+            tableName: clients
+  - changeSet:
+      id: 1764234596120-3
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropNotNullConstraint:
+            columnDataType: varchar(255)
+            columnName: client_type
+            schemaName: dms_service
+            tableName: clients
+        - sql:
+            sql: UPDATE dms_service.dms_programs SET dms_type = 'BASIC' WHERE dms_type IS NULL;
+        - addNotNullConstraint:
+            schemaName: dms_service
+            tableName: dms_programs
+            columnName: dms_type
+            columnDataType: varchar(255)
+  - changeSet:
+      id: 1764234596120-7
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    validateNullable: true
+                  name: gender
+                  type: VARCHAR(255)
+            schemaName: dms_service
+            tableName: insured_persons
+  - changeSet:
+      id: 1764234596120-9
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    validateNullable: true
+                  name: status
+                  type: VARCHAR(255)
+            schemaName: dms_service
+            tableName: claim_applications
+  - changeSet:
+      id: 1764234596120-11
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    validateNullable: true
+                  name: status
+                  type: VARCHAR(255)
+            schemaName: dms_service
+            tableName: insurance_contracts
+  - changeSet:
+      id: 1764234596120-12
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: status
+            schemaName: dms_service
+            tableName: outbox
+  - changeSet:
+      id: 1764234596120-13
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    validateNullable: true
+                  name: status
+                  type: VARCHAR(20)
+            schemaName: dms_service
+            tableName: outbox
+  - changeSet:
+      id: 1764234596120-15
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    validateNullable: true
+                  name: status
+                  type: VARCHAR(255)
+            schemaName: dms_service
+            tableName: policies
+  - changeSet:
+      id: 1764234596120-17
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    validateNullable: true
+                  name: type
+                  type: VARCHAR(255)
+            schemaName: dms_service
+            tableName: medical_facilities
+  - changeSet:
+      id: 1764234596120-18
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropNotNullConstraint:
+            columnDataType: bigint
+            columnName: version
+            schemaName: dms_service
+            tableName: insurance_applications
+

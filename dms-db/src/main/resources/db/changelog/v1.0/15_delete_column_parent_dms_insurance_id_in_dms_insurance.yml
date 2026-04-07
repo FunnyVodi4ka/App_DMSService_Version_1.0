@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: delete_column_parent_dms_insurance_id_in_dms_insurance
+      author: Evgeniy Rusakov
+      changes:
+        - dropColumn:
+            tableName: dms_insurance
+            columnName: parent_dms_insurance_id

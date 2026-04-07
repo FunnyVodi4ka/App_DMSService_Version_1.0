@@ -1,0 +1,161 @@
+server:
+  port: ${SERVER_PORT}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    enabled: true
+    sampling:
+      probability: ${SAMPLER_PROBABILITY}
+    baggage:
+      enabled: true
+      remote-fields:
+        - correlation-id
+        - client-id
+        - user-agent
+        - ip-address
+      correlation:
+        fields:
+          - correlation-id
+          - client-id
+          - user-agent
+          - ip-address
+    propagation:
+      type: W3C
+  zipkin:
+    tracing:
+      endpoint: "http://zipkin:${ZIPKIN_PORT}/api/v2/spans"
+
+spring:
+  application:
+    name: ${APPLICATION_NAME}
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: ${DATASOURCE_DRIVER}
+  liquibase:
+    enabled: ${MIGRATION_ENABLED}
+    change-log: ${CHANGELOG_DIR}/${CHANGELOG_FILE}
+    default-schema: ${DEFAULT_SCHEMA}
+    liquibase-schema: ${MIGRATION_SCHEMA}
+  jpa:
+    show-sql: ${SHOW_SQL}
+    properties:
+      hibernate:
+        show_sql: ${SHOW_SQL}
+        format_sql: ${SHOW_SQL}
+        ddl-auto: validate
+        default_schema: ${DEFAULT_SCHEMA}
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 60000
+            read-timeout: 20000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${SERVER_IP}:${EUREKA_PORT}/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+
+
+starter:
+  kafka:
+    topic-creation-enabled: true
+    consumer:
+      enabled: true
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      group-id: ${KAFKA_CONSUMER_GROUP_ID}
+      auto-offset-reset: latest
+      isolation-level: read_committed
+      max-poll-records: 50
+      max-poll-interval-ms: 300000
+      fetch-min-bytes: 1
+      fetch-max-bytes: 52428800
+      auto-commit-interval-ms: 5000
+      dlt:
+        topic-suffix: .DLT
+        max-attempts: 7
+        backoff-type: exponential
+        initial-interval: 2000
+        multiplier: 2.0
+        max-interval: 30000
+        non-retryable-exceptions:
+          - ru.astondevs.mycare.exception.kafka.EventSerializationException
+          - com.fasterxml.jackson.core.JsonProcessingException
+          - ru.astondevs.mycare.exception.kafka.MissingOutboxIdException
+        commit-recovered: true
+    mdc:
+      enabled: true
+      keys:
+        - "correlation-id"
+        - "client-id"
+        - "user-agent"
+        - "ip-address"
+        - "traceparent"
+        - "outbox_id"
+    topics:
+      - name: ${INSURANCE_APPLICATION_EVENTS}
+        enabled: true
+        partitions: 3
+        replicas: 1
+        configs:
+          min.insync.replicas: "1"
+          retention.ms: "604800000"
+          cleanup.policy: "delete"
+      - name: ${POLICY_EVENTS}
+        enabled: true
+        partitions: 3
+        replicas: 1
+        configs:
+          min.insync.replicas: "1"
+          retention.ms: "604800000"
+          cleanup.policy: "delete"
+    strict-producer-properties:
+      enabled: true
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.springframework.kafka.support.serializer.JsonSerializer"
+      acks: "all"
+      enable-idempotence: true
+      retries: 2147483647
+      max-in-flight-requests-per-connection: 1
+      delivery-timeout-ms: "120000"
+      linger-ms: "0"
+      request-timeout-ms: "30000"
+
+app:
+  kafka:
+    topics:
+      insurance-application-events: ${INSURANCE_APPLICATION_EVENTS}
+      insurance-application-events-dlt: ${INSURANCE_APPLICATION_EVENTS_DLT}
+      policy-events: ${POLICY_EVENTS}
+      policy-events-dlt: ${POLICY_EVENTS_DLT}
+      client-events: ${CLIENT_EVENTS}
+      employee-events: ${EMPLOYEE_EVENTS}
+
+scheduler:
+  lock:
+    at-least-for: ${LOCK_AT_LEAST_FOR:PT1M}
+    at-most-for: ${LOCK_AT_MOST_FOR:PT1H}
+pii:
+  logging:
+    enabled: true
+    public-key-base64: ${PUBLIC_KEY_BASE64}

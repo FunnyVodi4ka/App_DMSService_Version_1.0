@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-rejection-report-constraint
+      author: Azimov Ruslan
+      changes:
+        - dropNotNullConstraint:
+            catalogName: pg_tablespace
+            columnDataType: TEXT
+            columnName: rejection_report
+            schemaName: dms_service
+            tableName: dms_insurance

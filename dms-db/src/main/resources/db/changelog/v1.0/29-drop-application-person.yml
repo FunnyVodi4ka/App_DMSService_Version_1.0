@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-application-person
+      author: Mikhail Ermakov
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: applications_persons
+      changes:
+        - dropTable:
+            tableName: applications_persons

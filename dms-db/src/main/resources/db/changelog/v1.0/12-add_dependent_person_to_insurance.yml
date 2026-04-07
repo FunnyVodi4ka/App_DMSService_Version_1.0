@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_dependent_person_to_insurance
+      author: Evgeniy Rusakov
+      changes:
+        - addColumn:
+            tableName: dms_insurance
+            ifNotExists: true
+            columns:
+              - column:
+                  name: dependent_person_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_insured_person_self
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValue: true
+
+        - addForeignKeyConstraint:
+            baseTableName: dms_insurance
+            baseColumnNames: dependent_person_id
+            referencedTableName: dependent_person
+            referencedColumnNames: dependent_person_id
+            constraintName: fk_dependent_person_id

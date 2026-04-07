@@ -1,0 +1,208 @@
+databaseChangeLog:
+  - changeSet:
+      id: fk-insured-persons-doc
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: insured_persons
+            baseColumnNames: identity_document_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: identity_documents
+            referencedColumnNames: identity_document_id
+            constraintName: fk_insured_persons_identity_documents
+
+  - changeSet:
+      id: fk-contracts-persons
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: contracts_persons
+            baseColumnNames: insurance_contract_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insurance_contracts
+            referencedColumnNames: insurance_contract_id
+            constraintName: fk_contracts_persons_insurance_contracts
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: contracts_persons
+            baseColumnNames: insured_person_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insured_persons
+            referencedColumnNames: insured_person_id
+            constraintName: fk_contracts_persons_insured_persons
+
+
+  - changeSet:
+      id: fk-applications-persons
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: applications_persons
+            baseColumnNames: insurance_application_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insurance_applications
+            referencedColumnNames: insurance_application_id
+            constraintName: fk_applications_persons_insurance_applications
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: applications_persons
+            baseColumnNames: insured_person_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insured_persons
+            referencedColumnNames: insured_person_id
+            constraintName: fk_applications_persons_insured_persons
+
+  - changeSet:
+      id: fk-insurance_contracts-policy-app
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: insurance_contracts
+            baseColumnNames: policy_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: policies
+            referencedColumnNames: policy_id
+            constraintName: fk_insurance_contracts_policies
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: insurance_contracts
+            baseColumnNames: insurance_application_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insurance_applications
+            referencedColumnNames: insurance_application_id
+            constraintName: fk_insurance_contracts_insurance_applications
+
+  - changeSet:
+      id: fk-hist-insurance-applications
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: statuses_history_insurance_applications
+            baseColumnNames: insurance_application_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insurance_applications
+            referencedColumnNames: insurance_application_id
+            constraintName: fk_hist_insurance_app
+
+  - changeSet:
+      id: fk-medical_facilities-policies
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: medical_facilities
+            baseColumnNames: policy_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: policies
+            referencedColumnNames: policy_id
+            constraintName: fk_medfac_policy
+
+  - changeSet:
+      id: fk-claim_applications-policies
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: claim_applications
+            baseColumnNames: policy_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: policies
+            referencedColumnNames: policy_id
+            constraintName: fk_claim_app_policy
+
+  - changeSet:
+      id: fk-dms_claims_v2-claim_applications
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: dms_claims_v2
+            baseColumnNames: claim_application_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: claim_applications
+            referencedColumnNames: claim_application_id
+            constraintName: fk_claims_app
+
+  - changeSet:
+      id: fk-payment_orders-contracts-medical_facilities
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: payment_orders
+            baseColumnNames: insurance_contract_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insurance_contracts
+            referencedColumnNames: insurance_contract_id
+            constraintName: fk_payment_contract
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: payment_orders
+            baseColumnNames: medical_facility_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: medical_facilities
+            referencedColumnNames: medical_facility_id
+            constraintName: fk_payment_facility
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: payment_orders
+            baseColumnNames: dms_claim_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: dms_claims_v2
+            referencedColumnNames: dms_claim_id
+            constraintName: fk_payment_claim
+
+  - changeSet:
+      id: fk-histories
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: statuses_history_policies
+            baseColumnNames: policy_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: policies
+            referencedColumnNames: policy_id
+            constraintName: fk_hist_policy
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: statuses_history_insurance_contracts
+            baseColumnNames: insurance_contract_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: insurance_contracts
+            referencedColumnNames: insurance_contract_id
+            constraintName: fk_hist_contract
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: statuses_history_claim_applications
+            baseColumnNames: claim_application_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: claim_applications
+            referencedColumnNames: claim_application_id
+            constraintName: fk_hist_claim_app
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: statuses_history_dms_claims
+            baseColumnNames: dms_claim_id
+            referencedTableSchemaName: dms_service
+            referencedTableName: dms_claims_v2
+            referencedColumnNames: dms_claim_id
+            constraintName: fk_hist_dms_claim
+
+  - changeSet:
+      id: fk-programs-flags-type
+      author: Ivan Sakharov
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: dms_programs
+            baseColumnNames: dms_type
+            referencedTableSchemaName: dms_service
+            referencedTableName: dms_programs_flags
+            referencedColumnNames: type
+            constraintName: fk_programs_flags_type

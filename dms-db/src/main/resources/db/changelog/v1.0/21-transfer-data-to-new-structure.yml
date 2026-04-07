@@ -1,0 +1,254 @@
+databaseChangeLog:
+  - changeSet:
+      id: transfer_identity_documents_data_to_new_table
+      author: Ivan Sakharov
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO dms_service.identity_documents(
+                identity_document_id,
+                identity_document_type,
+                identity_document_number,
+                identity_document_issue,
+                issue_date,
+                mongo_id,
+                loaded_at,
+                updated_at
+              )
+              SELECT
+                gen_random_uuid(),
+                dp.identity_document_type,
+                COALESCE(NULLIF(dp.identity_document_series,'')||' ','') || dp.identity_document_number,
+                dp.identity_document_issued_by,
+                dp.identity_document_issue_date,
+                'LEGACY-DEP:' || dp.dependent_person_id::text, -- временная метка-связка
+                now(),
+                now()
+              FROM dms_service.dependent_person dp
+              WHERE dp.identity_document_number IS NOT NULL;
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM dms_service.identity_documents
+              WHERE mongo_id LIKE 'LEGACY-DEP:%';
+
+  - changeSet:
+      id: create_dependent_person_to_identity_document_map
+      author: Ivan Sakharov
+      changes:
+        - createTable:
+            schemaName: dms_service
+            tableName: dependent_person_to_identity_document
+            columns:
+              - column:
+                  name: dependent_person_id
+                  type: uuid
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: identity_document_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - sql:
+            sql: |
+              INSERT INTO dms_service.dependent_person_to_identity_document(
+              dependent_person_id,
+              identity_document_id
+              )
+              SELECT 
+                dp.dependent_person_id, 
+                idoc.identity_document_id
+              FROM dms_service.dependent_person dp
+              JOIN dms_service.identity_documents idoc
+                ON idoc.mongo_id = 'LEGACY-DEP:' || dp.dependent_person_id::text;
+
+      rollback:
+        - dropTable:
+            schemaName: dms_service
+            tableName: dependent_person_to_identity_document
+            cascadeConstraints: true
+
+  - changeSet:
+      id: insured_persons_client_id_nullable
+      author: Ivan Sakharov
+      changes:
+        - dropNotNullConstraint:
+            schemaName: dms_service
+            tableName: insured_persons
+            columnName: client_id
+            columnDataType: uuid
+
+  - changeSet:
+      id: transfer_dependent_person_data_to_new_table
+      author: Ivan Sakharov
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO dms_service.insured_persons(
+                insured_person_id,
+                client_id,
+                identity_document_id,
+                insured_person_type,
+                is_external,
+                is_self,
+                first_name,
+                last_name,
+                middle_name,
+                gender,
+                birth_date,
+                created_at,
+                updated_at
+              )
+              SELECT
+              gen_random_uuid(),
+              NULL,
+              m.identity_document_id,
+              'OTHER'::insured_person_type,
+              false,
+              false,
+              dp.first_name,
+              dp.last_name,
+              dp.middle_name,
+              dp.gender,
+              dp.birth_date,
+              now(),
+              now()
+              FROM dms_service.dependent_person dp
+              JOIN dms_service.dependent_person_to_identity_document m
+                ON m.dependent_person_id = dp.dependent_person_id
+      rollback:
+        - sql:
+            sql: DELETE FROM dms_service.insured_persons
+              WHERE identity_document_id IN (
+                SELECT identity_document_id FROM dms_service.dependent_person_to_identity_document
+              );
+
+
+  - changeSet:
+      id: drop_dependent_person_to_identity_document
+      author: Ivan Sakharov
+      changes:
+        - dropTable:
+            schemaName: dms_service
+            tableName: dependent_person_to_identity_document
+            cascadeConstraints: true
+
+
+  - changeSet:
+      id: seed-dms-program-flags
+      author: Ivan Sakharov
+      changes:
+        - sql:
+            sql: |             
+              INSERT INTO dms_service.dms_programs_flags(
+                type,
+                clinic_service,
+                hospitalization,
+                stomatology,
+                ambulance,
+                calling_doctor,
+                telemedicine
+              )
+              VALUES 
+                ('BASIC'::dmstype,            true,  false, false, false, true,  false),
+                ('COMPREHENSIVE'::dmstype,    true,  true,  false, true,  true,  true),
+                ('MAXIMUM'::dmstype,          true,  true,  true,  true,  true,  true),
+                ('FAMILIAL-BASIC'::dmstype,   true,  true,  false, true,  false, false),
+                ('FAMILIAL-PREMIUM'::dmstype, true,  true,  true,  true,  true,  true)
+              ON CONFLICT (type) DO UPDATE
+              SET clinic_service  = EXCLUDED.clinic_service,
+                  hospitalization = EXCLUDED.hospitalization,
+                  stomatology     = EXCLUDED.stomatology,
+                  ambulance       = EXCLUDED.ambulance,
+                  calling_doctor  = EXCLUDED.calling_doctor,
+                  telemedicine    = EXCLUDED.telemedicine;
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM dms_service.dms_programs_flags
+              WHERE type IN ('BASIC'::dmstype, 'COMPREHENSIVE'::dmstype,
+                'MAXIMUM'::dmstype, 'FAMILIAL-BASIC'::dmstype, 'FAMILIAL-PREMIUM'::dmstype);
+
+
+  - changeSet:
+      id: trigger-dms-programs-flags
+      author: Ivan Sakharov
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE OR REPLACE FUNCTION dms_service.set_program_flags_from_type()
+              RETURNS trigger AS $$
+              BEGIN
+                SELECT f.clinic_service,
+                       f.hospitalization,
+                       f.stomatology,
+                       f.ambulance,
+                       f.calling_doctor,
+                       f.telemedicine
+                  INTO NEW.clinic_service,
+                       NEW.hospitalization,
+                       NEW.stomatology,
+                       NEW.ambulance,
+                       NEW.calling_doctor,
+                       NEW.telemedicine
+                FROM dms_service.dms_programs_flags f
+                WHERE f.type = NEW.dms_type;
+
+                NEW.clinic_service   := COALESCE(NEW.clinic_service,   false);
+                NEW.hospitalization  := COALESCE(NEW.hospitalization,  false);
+                NEW.stomatology      := COALESCE(NEW.stomatology,      false);
+                NEW.ambulance        := COALESCE(NEW.ambulance,        false);
+                NEW.calling_doctor   := COALESCE(NEW.calling_doctor,   false);
+                NEW.telemedicine     := COALESCE(NEW.telemedicine,     false);
+
+                RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+              
+              DROP TRIGGER IF EXISTS trg_dms_programs_flags ON dms_service.dms_programs;
+              CREATE TRIGGER trg_dms_programs_flags
+                BEFORE INSERT OR UPDATE OF dms_type
+                ON dms_service.dms_programs
+                FOR EACH ROW
+              EXECUTE FUNCTION dms_service.set_program_flags_from_type();
+      rollback:
+        - sql:
+            sql: |
+              DROP TRIGGER IF EXISTS trg_dms_programs_flags ON dms_service.dms_programs;
+              DROP FUNCTION IF EXISTS dms_service.set_program_flags_from_type();
+
+  - changeSet:
+      id: transfer_dms_program_to_new_table
+      author: Ivan Sakharov
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO dms_service.dms_programs (
+                dms_program_id,
+                dms_type,
+                cost
+              )
+              SELECT
+                src.dms_program_id,
+                src.dms_type,       
+                NULL::numeric        
+              FROM dms_service.dms_program src
+              WHERE NOT EXISTS (
+                SELECT 1
+                FROM dms_service.dms_programs tgt
+                WHERE tgt.dms_program_id = src.dms_program_id
+              );
+
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM dms_service.dms_programs tgt
+              WHERE EXISTS (
+                SELECT 1
+                FROM dms_service.dms_program src
+                WHERE src.dms_program_id = tgt.dms_program_id
+              );

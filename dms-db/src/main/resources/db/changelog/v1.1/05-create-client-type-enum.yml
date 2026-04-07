@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05-create-client-type-enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'client_type_enum'
+      changes:
+        - sql:
+            sql: CREATE TYPE client_type_enum AS ENUM ('INDIVIDUAL', 'REPRESENTATIVE_ADMIN', 'REPRESENTATIVE');
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS client_type_enum

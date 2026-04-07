@@ -1,0 +1,127 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-identitydocumenttype-enum
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'identitydocumenttype'
+      changes:
+        - sql:
+            sql:
+              DROP TYPE IF EXISTS identitydocumenttype;
+      rollback:
+        - sql:
+            sql:
+              CREATE TYPE identitydocumenttype AS ENUM
+              ('PASSPORT', 'BIRTH_CERTIFICATE', 'POWER_OF_ATTORNEY');
+        - sql:
+            sql:
+              ALTER TYPE dms_service.identitydocumenttype OWNER TO admin;
+
+  - changeSet:
+      id: drop-insurancestatus-enum
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'insurancestatus'
+      changes:
+        - sql:
+            sql: DROP TYPE IF EXISTS insurancestatus;
+      rollback:
+        - sql:
+            sql:
+              CREATE TYPE insurancestatus AS ENUM
+              ('PENDING', 'APPROVED', 'CANCELLED', 'REJECTED', 'ISSUED');
+        - sql:
+            sql:
+              ALTER TYPE insurancestatus OWNER TO admin
+
+
+  - changeSet:
+      id: drop-paymentfrequency-enum
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'paymentfrequency'
+      changes:
+        - sql:
+            sql: DROP TYPE IF EXISTS paymentfrequency;
+      rollback:
+        - sql:
+            sql:
+              CREATE TYPE paymentfrequency AS ENUM
+              ('ONCE_IN_MONTH', 'ONCE_IN_THREE_MONTHS', 'ONCE_IN_SIX_MONTHS', 'ONCE_IN_TWELVE_MONTHS');
+        - sql:
+            sql:
+              ALTER TYPE paymentfrequency OWNER TO admin
+
+  - changeSet:
+      id: drop-paymentmethod-enum
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'paymentmethod'
+      changes:
+        - sql:
+            sql: DROP TYPE IF EXISTS paymentmethod;
+      rollback:
+        - sql:
+            sql:
+              CREATE TYPE paymentmethod AS ENUM ('CLINIC_DETAILS', 'INTERMEDIARY', 'RECEIPT');
+        - sql:
+            sql:
+              ALTER TYPE paymentmethod OWNER TO admin
+
+  - changeSet:
+      id: drop-paymentstatus-enum
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'paymentstatus'
+      changes:
+        - sql:
+            sql: DROP TYPE IF EXISTS paymentstatus;
+      rollback:
+        - sql:
+            sql:
+              CREATE TYPE paymentstatus AS ENUM ('PAID', 'PENDING', 'FAILED');
+        - sql:
+            sql:
+              ALTER TYPE paymentstatus OWNER TO admin
+
+  - changeSet:
+      id: drop-status-enum
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql:
+              SELECT COUNT(*) FROM pg_type WHERE typname = 'status'
+      changes:
+        - sql:
+            sql: DROP TYPE IF EXISTS status;
+      rollback:
+        - sql:
+            sql:
+              CREATE TYPE status AS ENUM ('PENDING', 'DECLINED', 'APPROVED');
+        - sql:
+            sql:
+              ALTER TYPE status OWNED TO admin
+
+

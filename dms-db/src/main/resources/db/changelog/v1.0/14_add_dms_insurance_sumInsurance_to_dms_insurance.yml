@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_dms_insurance_sumInsurance_to_dms_insurance
+      author: Ruslan Radevich
+      changes:
+        - sqlFile:
+            path: db/changelog/v1.0/sql/add_dms_insurance_sumInsurance_to_dms_insurance.sql

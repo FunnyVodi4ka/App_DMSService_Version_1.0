@@ -1,0 +1,163 @@
+databaseChangeLog:
+  - changeSet:
+      id: init_db_schema
+      author: Filipp Stavcev
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - sqlFile:
+            path: db/changelog/v1.0/sql/init-db-enums.sql
+
+        - createTable:
+            tableName: dms_program
+            columns:
+              - column:
+                  name: dms_program_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dms_type
+                  type: DmsType
+                  constraints:
+                    nullable: false
+              - column:
+                  name: clinic_service
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hospitalization
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stomatology
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ambulance
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: calling_doctor
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: dms_insurance
+            columns:
+              - column:
+                  name: dms_insurance_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: individual_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dms_program_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_dms_program_id
+                    references: dms_program(dms_program_id)
+              - column:
+                  name: address_id
+                  type: UUID
+              - column:
+                  name: parent_dms_insurance_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_dms_insurance_parent
+                    references: dms_insurance(dms_insurance_id)
+              - column:
+                  name: insurance_status
+                  type: InsuranceStatus
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+                    checkConstraint: "start_date > creation_date"
+              - column:
+                  name: end_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+                    checkConstraint: "end_date > start_date"
+              - column:
+                  name: is_deleted
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_frequency
+                  type: PaymentFrequency
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost
+                  type: DECIMAL(13,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_sum
+                  type: DECIMAL(13,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rejection_report
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: agreement
+            columns:
+              - column:
+                  name: agreement_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dms_insurance_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_dms_insurance_id
+                    references: dms_insurance(dms_insurance_id)
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_status
+                  type: PaymentStatus
+                  constraints:
+                    nullable: false

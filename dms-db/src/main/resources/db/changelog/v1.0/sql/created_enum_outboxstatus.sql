@@ -1,0 +1,1 @@
+CREATE TYPE outbox_status AS ENUM ('PENDING','SENT','FAILED');

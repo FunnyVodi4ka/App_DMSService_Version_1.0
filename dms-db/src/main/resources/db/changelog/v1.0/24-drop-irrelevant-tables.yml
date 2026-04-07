@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-agreement-table
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: agreement
+      changes:
+        - dropTable:
+            tableName: agreement
+
+  - changeSet:
+      id: drop-confirmation_document-table
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: confirmation_document
+      changes:
+        - dropTable:
+            tableName: confirmation_document
+
+  - changeSet:
+      id: drop-dependent_person-table
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: dependent_person
+      changes:
+        - dropTable:
+            tableName: dependent_person
+
+  - changeSet:
+      id: drop-dms_insurance-table
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: dms_insurance
+      changes:
+        - dropTable:
+            tableName: dms_insurance
+
+  - changeSet:
+      id: drop-dms_claim-table
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: dms_claim
+      changes:
+        - dropTable:
+            tableName: dms_claim
+

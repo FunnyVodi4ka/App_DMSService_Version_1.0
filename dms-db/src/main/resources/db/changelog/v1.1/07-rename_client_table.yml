@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: rename-client-table
+      author: Ivan Sakharov
+      preConditions:
+        - tableExists:
+            schemaName: dms_service
+            tableName: client
+        - not:
+            - tableExists:
+                schemaName: dms_service
+                tableName: clients
+      changes:
+        - renameTable:
+            schemaName: dms_service
+            oldTableName: client
+            newTableName: clients

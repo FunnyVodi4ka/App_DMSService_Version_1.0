@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-dms_program-table
+      author: Ivan_Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: dms_program
+      changes:
+        - dropTable:
+            tableName: dms_program

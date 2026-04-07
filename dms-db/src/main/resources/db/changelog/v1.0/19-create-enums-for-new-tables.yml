@@ -1,0 +1,172 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_client_company_client_type_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'client_company_client_type'
+      changes:
+        - sql:
+            sql: CREATE TYPE client_company_client_type AS ENUM ('ACTIVE', 'INACTIVE');
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS client_company_client_type
+
+
+  - changeSet:
+      id: create_insured_person_type_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'insured_person_type'
+      changes:
+        - sql:
+            sql: CREATE TYPE insured_person_type AS ENUM ('SELF', 'EMPLOYEE', 'OTHER')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS insured_person_type
+
+  - changeSet:
+      id: create_insurance_app_status_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'insurance_app_status'
+      changes:
+        - sql:
+            sql: CREATE TYPE insurance_app_status
+              AS ENUM ('PENDING', 'APPROVED', 'CANCELLED', 'REJECTED')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS insurance_app_status
+
+  - changeSet:
+      id: create_insurance_contract_status_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'insurance_contract_status'
+      changes:
+        - sql:
+            sql: CREATE TYPE insurance_contract_status
+              AS ENUM ('PENDING', 'APPROVED', 'CANCELLED', 'REJECTED')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS insurance_contract_status
+
+  - changeSet:
+      id: add_familial_basic_value_to_dmstype
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql: SELECT 1 FROM pg_type WHERE typname = 'dmstype'
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_enum e JOIN pg_type t ON t.oid = e.enumtypid
+                  WHERE t.typname = 'dmstype' AND e.enumlabel = 'FAMILIAL-BASIC'
+      changes:
+        - sql:
+            sql: ALTER TYPE dmstype ADD VALUE 'FAMILIAL-BASIC'
+
+  - changeSet:
+      id: add_familial_premium_value_to_dmstype
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '1'
+            sql: SELECT 1 FROM pg_type WHERE typname = 'dmstype'
+        - sqlCheck:
+             expectedResult: '0'
+             sql: SELECT COUNT(*) FROM pg_enum e JOIN pg_type t ON t.oid = e.enumtypid
+                  WHERE t.typname = 'dmstype' AND e.enumlabel = 'FAMILIAL-PREMIUM'
+      changes:
+        - sql:
+            sql: ALTER TYPE dmstype ADD VALUE 'FAMILIAL-PREMIUM'
+
+  - changeSet:
+      id: create_claim_app_status_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'claim_app_status'
+      changes:
+        - sql:
+            sql: CREATE TYPE claim_app_status
+              AS ENUM ('PENDING', 'APPROVED', 'CANCELLED', 'REJECTED')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS claim_app_status
+
+  - changeSet:
+      id: create_policy_status_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'policy_status'
+      changes:
+        - sql:
+            sql: CREATE TYPE policy_status AS ENUM ('ACTIVE', 'INACTIVE')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS policy_status
+
+  - changeSet:
+      id: create_dms_claim_method_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'dms_claim_method'
+      changes:
+        - sql:
+            sql: CREATE TYPE dms_claim_method AS ENUM ('RECEIPT', 'BANK_DETAILS')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS dms_claim_method
+
+  - changeSet:
+      id: create_dms_claim_status_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'dms_claim_status'
+      changes:
+        - sql:
+            sql: CREATE TYPE dms_claim_status AS ENUM ('PENDING', 'DONE', 'CANCELLED')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS dms_claim_status
+
+  - changeSet:
+      id: create_medical_facilities_type_enum
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: '0'
+            sql: SELECT COUNT(*) FROM pg_type WHERE typname = 'medical_facilities_type'
+      changes:
+        - sql:
+            sql: CREATE TYPE medical_facilities_type
+              AS ENUM ('CLINIC', 'HOSPITAL', 'MEDICAL_CENTER', 'DENTISTRY', 'LABORATORY')
+      rollback:
+        - sql:
+            sql: DROP TYPE IF EXISTS medical_facilities_type

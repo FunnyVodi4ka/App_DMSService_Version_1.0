@@ -1,0 +1,118 @@
+databaseChangeLog:
+  - changeSet:
+      id: created_dependent_person_table
+      author: Evgeniy Rusakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - sqlFile:
+            path: classpath:db/changelog/v1.0/sql/created-enums-for-table-dependent-person.sql
+
+        - createTable:
+            schemaName: dms_service
+            tableName: dependent_person
+            ifNotExists: true
+            columns:
+              - column:
+                  name: dependent_person_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: first_name
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: middle_name
+                  type: VARCHAR(40)
+              - column:
+                  name: gender
+                  type: dms_service.Gender
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address_reg
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identity_document_type
+                  type: dms_service.IdentityDocumentType
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identity_document_series
+                  type: VARCHAR(4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identity_document_number
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identity_document_issue_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: identity_document_issued_by
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            schemaName: dms_service
+            tableName: confirmation_document
+            ifNotExists: true
+            columns:
+              - column:
+                  name: document_file_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: document_file_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: document_file_type
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: document_file_url
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dependent_person_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+
+        - addForeignKeyConstraint:
+            baseTableName: confirmation_document
+            baseColumnNames: dependent_person_id
+            referencedTableName: dependent_person
+            referencedColumnNames: dependent_person_id
+            constraintName: fk_confirmation_document_dependent_person

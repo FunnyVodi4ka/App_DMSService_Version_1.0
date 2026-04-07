@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 09-drop-column-to-dms-insurance-client-id
+      author: Ruslan_Radevich
+      changes:
+        - dropColumn:
+            tableName: dms_insurance
+            columnName: client_id

@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-index-to-shedlock-lock-until
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: shedlock
+            schemaName: dms_service
+        - not:
+            - indexExists:
+                indexName: idx_shedlock_lock_until
+                tableName: shedlock
+                schemaName: dms_service
+      changes:
+        - createIndex:
+            schemaName: dms_service
+            tableName: shedlock
+            indexName: idx_shedlock_lock_until
+            columns:
+              - column:
+                  name: lock_until

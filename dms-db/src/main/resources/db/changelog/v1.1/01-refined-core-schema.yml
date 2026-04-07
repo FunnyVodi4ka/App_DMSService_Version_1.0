@@ -1,0 +1,246 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_dms_programs_table_v1_1
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: dms_service
+                tableName: dms_programs
+      changes:
+        - createTable:
+            schemaName: dms_service
+            tableName: dms_programs
+            columns:
+              - column:
+                  name: dms_program_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dms_type
+                  type: dmstype
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost
+                  type: DECIMAL(10,2)
+              - column:
+                  name: clinic_service
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hospitalization
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stomatology
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ambulance
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: calling_doctor
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: telemedicine
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: upgrade_insurance_applications_v1_to_v1_1
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            schemaName: dms_service
+            tableName: insurance_applications
+        - not:
+            - columnExists:
+                schemaName: dms_service
+                tableName: insurance_applications
+                columnName: client_type
+      changes:
+        - addColumn:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columns:
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+              - column:
+                  name: client_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: comment
+                  type: varchar(400)
+              - column:
+                  name: insured_person_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+
+        - modifyDataType:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: status
+            newDataType: varchar(255)
+
+        - modifyDataType:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: created_at
+            newDataType: timestamp with time zone
+
+        - modifyDataType:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: updated_at
+            newDataType: timestamp with time zone
+
+        - sql:
+            sql: |
+              -- Временное заполнение новых колонок. TODO: заменить бизнес-логикой
+              UPDATE dms_service.insurance_applications
+              SET client_id = gen_random_uuid(),
+                  client_type = 'UNKNOWN',
+                  insured_person_id = gen_random_uuid()
+              WHERE client_id IS NULL;
+
+        - addNotNullConstraint:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: client_id
+
+        - addNotNullConstraint:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: client_type
+
+        - addNotNullConstraint:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: insured_person_id
+
+  - changeSet:
+      id: create_insurance_applications_table_v1_1_placeholder
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: dms_service
+                tableName: insurance_applications
+      changes:
+        - createTable:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columns:
+              - column:
+                  name: insurance_application_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dms_program_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: employee_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: insured_person_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comment
+                  type: varchar(400)
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: add_fk_insurance_applications_dms_program_v1_1
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            schemaName: dms_service
+            tableName: insurance_applications
+        - tableExists:
+            schemaName: dms_service
+            tableName: dms_programs
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeySchemaName: dms_service
+                foreignKeyTableName: insurance_applications
+                foreignKeyName: fk_insurance_applications_dms_program
+      changes:
+        - addForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: insurance_applications
+            baseColumnNames: dms_program_id
+            constraintName: fk_insurance_applications_dms_program
+            referencedTableSchemaName: dms_service
+            referencedTableName: dms_programs
+            referencedColumnNames: dms_program_id
+            onDelete: RESTRICT
+            onUpdate: CASCADE

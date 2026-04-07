@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop_old_outbox_v1
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: outbox
+        - not:
+            - columnExists:
+                tableName: outbox
+                columnName: aggregate_id
+      changes:
+        - validCheckSum: ANY
+        - comment: "Marking old 'create_outbox_table' as run to skip it."
+
+  - changeSet:
+      id: create_outbox_table_v2
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: outbox
+      changes:
+        - createTable:
+            tableName: outbox
+            columns:
+              - column: { name: outbox_id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: aggregate_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: aggregate_type, type: varchar(255), constraints: { nullable: false } }
+              - column: { name: topic, type: varchar(255), constraints: { nullable: false } }
+              - column: { name: payload, type: jsonb, constraints: { nullable: false } }
+              - column: { name: headers, type: jsonb }
+              - column: { name: status, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: processed_at, type: timestamp with time zone }
+              - column: { name: retry_count, type: int, defaultValue: '0', constraints: { nullable: false } }
+              - column: { name: last_error, type: text }
+              - column: { name: created_at, type: timestamp with time zone, defaultValueComputed: "now()", constraints: { nullable: false } }
+
+  - changeSet:
+      id: upgrade_outbox_v1_to_v2
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: outbox
+        - not:
+            - columnExists:
+                tableName: outbox
+                columnName: aggregate_id
+      changes:
+        - addColumn:
+            tableName: outbox
+            columns:
+              - column: { name: aggregate_id, type: uuid, constraints: { nullable: true } }
+              - column: { name: aggregate_type, type: varchar(255), constraints: { nullable: true } }
+              - column: { name: last_error, type: text }
+              - column: { name: headers, type: jsonb }
+
+        - modifyDataType:
+            tableName: outbox
+            columnName: status
+            newDataType: varchar(20)
+
+        - modifyDataType:
+            tableName: outbox
+            columnName: processed_at
+            newDataType: timestamp with time zone
+        - modifyDataType:
+            tableName: outbox
+            columnName: created_at
+            newDataType: timestamp with time zone
+
+        - sql:
+            sql: |
+              UPDATE outbox SET
+                aggregate_id = gen_random_uuid(),
+                aggregate_type = 'UNKNOWN'
+              WHERE aggregate_id IS NULL;
+
+        - addNotNullConstraint:
+            tableName: outbox
+            columnName: aggregate_id
+        - addNotNullConstraint:
+            tableName: outbox
+            columnName: aggregate_type

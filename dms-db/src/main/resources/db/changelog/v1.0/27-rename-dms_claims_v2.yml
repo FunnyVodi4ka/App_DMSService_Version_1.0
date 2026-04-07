@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: rename-dms_claims_v2-to-dms_claims
+      author: Ivan Sakharov
+      preConditions:
+        - tableExists:
+            schemaName: dms_service
+            tableName: dms_claims_v2
+        - not:
+            - tableExists:
+                schemaName: dms_service
+                tableName: dms_claims
+      changes:
+        - renameTable:
+            schemaName: dms_service
+            oldTableName: dms_claims_v2
+            newTableName: dms_claims

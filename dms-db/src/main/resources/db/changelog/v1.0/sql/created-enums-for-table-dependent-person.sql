@@ -1,0 +1,2 @@
+CREATE TYPE dms_service.Gender AS ENUM ('MALE', 'FEMALE');
+CREATE TYPE dms_service.IdentityDocumentType AS ENUM ('PASSPORT', 'BIRTH_CERTIFICATE','POWER_OF_ATTORNEY');

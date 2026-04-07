@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: created_dms_payment_table
+      author: Victor_Vityushov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - sqlFile:
+            path: classpath:db/changelog/v1.0/sql/created-enums-for-table-dms-payment.sql
+
+        - createTable:
+            schemaName: dms_service
+            tableName: dms_claim
+            columns:
+              - column:
+                  name: dms_claim_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: dms_agreement_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_dms_agreement
+                    references:
+                      table: dms_service.agreement
+                      column: agreement_id
+              - column:
+                  name: company_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: dms_service.Status
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_method
+                  type: dms_service.PaymentMethod
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attachments
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date
+                  type: DATE
+                  constraints:
+                    nullable: false

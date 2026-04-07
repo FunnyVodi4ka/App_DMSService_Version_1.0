@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-version-to-policy.yml
+      author: Ivan Segen
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            schemaName: dms_service
+            tableName: policies
+        - not:
+            - columnExists:
+                schemaName: dms_service
+                tableName: policies
+                columnName: version
+      changes:
+        - addColumn:
+            schemaName: dms_service
+            tableName: policies
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: add-update-time-to-policy.yml
+      author: Ivan Segen
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            schemaName: dms_service
+            tableName: policies
+        - not:
+            - columnExists:
+                schemaName: dms_service
+                tableName: policies
+                columnName: updated_at
+      changes:
+        - addColumn:
+            schemaName: dms_service
+            tableName: policies
+            columns:
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false

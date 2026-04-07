@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-fk-dms_insurance-dependent_person
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+          foreignKeyConstraintExists:
+            foreignKeyName: fk_dependent_person_id
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: dms_insurance
+            constraintName: fk_dependent_person_id
+
+  - changeSet:
+      id: drop-fk-dms_insurance-dms_program
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+          foreignKeyConstraintExists:
+            foreignKeyName: fk_dms_program_id
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: dms_insurance
+            constraintName: fk_dms_program_id
+
+  - changeSet:
+      id: drop-fk-confirmation_document-dependent_person
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+          foreignKeyConstraintExists:
+            foreignKeyName: fk_confirmation_document_dependent_person
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: confirmation_document
+            constraintName: fk_confirmation_document_dependent_person
+
+  - changeSet:
+      id: drop-fk-agreement-dependent_person
+      author: Ivan Sakharov
+      preConditions:
+        - onFail: MARK_RAN
+          foreignKeyConstraintExists:
+            foreignKeyName: fk_dms_insurance_id
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: dms_service
+            baseTableName: agreement
+            constraintName: fk_dms_insurance_id
+

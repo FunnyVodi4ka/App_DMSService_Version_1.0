@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove_insured_person_id_from_insurance_applications
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: insured_person_id
+      changes:
+        - dropColumn:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: insured_person_id

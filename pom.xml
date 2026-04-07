@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.4.12</version>
+    <relativePath/> </parent>
+
+  <groupId>ru.astondevs.mycare</groupId>
+  <artifactId>dms-insurance</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>dms-insurance</name>
+  <description>dms-insurance</description>
+
+  <modules>
+    <module>dms-impl</module>
+    <module>dms-db</module>
+    <module>dms-domain</module>
+  </modules>
+
+  <properties>
+    <java.version>21</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <start-class>ru.astondevs.mycare.DmsInsuranceApplication</start-class>
+    <spring-cloud.version>2024.0.3</spring-cloud.version>
+    <context-propagation.version>1.1.3</context-propagation.version>
+    <mycare.version>1.0.0-SNAPSHOT</mycare.version>
+    <kafka-starter-pro.version>0.0.1-SNAPSHOT</kafka-starter-pro.version>
+    <lombok.version>1.18.42</lombok.version> <mapstruct.version>1.5.5.Final</mapstruct.version>
+    <springdoc.version>2.8.13</springdoc.version>
+    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+    <shedlock.version>6.10.0</shedlock.version>
+    <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <checkstyle.version>12.0.1</checkstyle.version>
+    <starter.exception-handler.version>1.0.0-SNAPSHOT</starter.exception-handler.version>
+    <logging-spring-boot-starter.version>1.0.0-SNAPSHOT</logging-spring-boot-starter.version>
+    <uuid-v7-starter-pro.version>1.0.0</uuid-v7-starter-pro.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>nexus</id>
+      <name>my care nexus</name>
+      <url>https://nexus.astondevs.ru/repository/MyCare-maven/</url>
+    </repository>
+  </repositories>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>uuid-v7-starter-pro</artifactId>
+        <version>${uuid-v7-starter-pro.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.javacrumbs.shedlock</groupId>
+        <artifactId>shedlock-spring</artifactId>
+        <version>${shedlock.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.javacrumbs.shedlock</groupId>
+        <artifactId>shedlock-provider-jdbc-template</artifactId>
+        <version>${shedlock.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>context-propagation</artifactId>
+        <version>${context-propagation.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>dms-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>dms-domain</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>dms-db</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>mycare-security-starter</artifactId>
+        <version>${mycare.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>logging-spring-boot-starter</artifactId>
+        <version>${logging-spring-boot-starter.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>starter-exception-handler</artifactId>
+        <version>${starter.exception-handler.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ru.astondevs.mycare</groupId>
+        <artifactId>kafka-starter-pro</artifactId>
+        <version>${kafka-starter-pro.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${mapstruct.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>${mapstruct.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-configuration-processor</artifactId>
+        <optional>true</optional>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco-maven-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${maven-checkstyle-plugin.version}</version>
+          <configuration>
+            <configLocation>checkstyle/checkstyle.xml</configLocation>
+            <suppressionsLocation>checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>${checkstyle.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

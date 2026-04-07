@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1764763520840-3
+      author: Mikhail Ermakov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_employees
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: employee_roles
+                  type: SMALLINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: last_name
+                  type: VARCHAR(40)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: first_name
+                  type: VARCHAR(40)
+              - column:
+                  name: middle_name
+                  type: VARCHAR(40)
+              - column:
+                  name: manager_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_at
+                  type: TIMESTAMPTZ
+              - column:
+                  constraints:
+                    nullable: false
+                  name: updated_at
+                  type: TIMESTAMPTZ
+            schemaName: dms_service
+            tableName: employees
+

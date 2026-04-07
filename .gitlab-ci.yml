@@ -1,0 +1,289 @@
+stages:
+  - build
+  - test
+  - package
+  - docker
+  - deploy
+  - migration
+
+default:
+  tags:
+    - dev-java-runner
+#re-deploy
+variables:
+  MAVEN_ARGS: "--settings .m2/settings.xml --batch-mode --no-transfer-progress -Dmaven.plugin.validation=brief -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository"
+  DB_MIGRATION_PARAMS: |
+    --changeLogFile=${CHANGELOG_DIR}/${CHANGELOG_FILE}
+    --url=${DATASOURCE_URL}?currentSchema=${DEFAULT_SCHEMA}
+    --username=${POSTGRES_USER}
+    --password=${POSTGRES_PASSWORD}
+    --liquibaseSchemaName=${MIGRATION_SCHEMA}
+
+.build-template:
+  image: maven:3.9.6
+  stage: build
+  script:
+    - mvn $MAVEN_ARGS clean compile -U
+
+build:dev:
+  extends: .build-template
+  environment:
+    name: dev
+  only:
+    - develop
+    - merge_requests
+
+build:prod:
+  extends: .build-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  only:
+    - main
+
+.test-template:
+  image: maven:3.9.6
+  stage: test
+  variables:
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_HOST: tcp://${SERVER_IP}:2375
+    DOCKER_DRIVER: overlay2
+  script:
+  # Этап линтинга с указанием пути к конфигу
+    - echo "Running Checkstyle code style checks..."
+    - mvn -B -ntp -fae $MAVEN_ARGS checkstyle:check -Dcheckstyle.config.location=checkstyle/checkstyle.xml -Dcheckstyle.suppressions.location=checkstyle/checkstyle-suppressions.xml 
+    - mvn -Dsonar.scm.disabled=True $MAVEN_ARGS verify sonar:sonar
+      -Dsonar.projectKey=my-care-dms-sonar
+      -Dsonar.projectName=${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_REF_SLUG}
+      -Dsonar.projectVersion=0.0.1
+      -Dsonar.links.ci=$CI_PIPELINE_URL
+      -Dsonar.login=$SONAR_LOGIN
+      -Dsonar.host.url=$SONAR_HOST_URL
+      -Dsonar.coverage.jacoco.xmlReportPaths=${CI_BUILDS_DIR}/${CI_PROJECT_PATH}/dms-impl/target/jacoco-ui/jacoco.xml
+      -Dsonar.qualitygate.wait=false
+      -Dsonar.java.test.exclude=test
+      -Dsonar.exclusions=**/mapper/**,**/dto/**,**/controller/**,**/config/**,**/util/**,**/*DmsInsuranceApplication*
+    - cat dms-impl/target/jacoco-ui/index.html | grep -o 'Total[^%]*%' | sed 's/<.*>/ /; s/Total/Tests Coverage Total:/' || true
+  coverage: /Tests Coverage Total:\s*([^%]+)/
+  allow_failure: true
+
+test:dev:
+  extends: .test-template
+  environment:
+    name: dev
+  dependencies:
+    - build:dev
+  only:
+    - develop
+    - merge_requests
+
+
+test:prod:
+  extends: .test-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  dependencies:
+    - build:prod
+  only:
+    - main
+
+.package-template:
+  image: maven:3.9.6
+  stage: package
+  script:
+    - mvn $MAVEN_ARGS -DskipTests package
+  artifacts:
+    expire_in: 30 min
+    paths:
+      - dms-impl/target/*.jar
+
+package:dev:
+  extends: .package-template
+  environment:
+    name: dev
+  only:
+    - develop
+
+package:prod:
+  extends: .package-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  only:
+    - main
+
+.docker-template:
+  image: docker:stable
+  stage: docker
+  variables:
+    DOCKER_TLS_CERTDIR: ''
+    DOCKER_HOST: tcp://${SERVER_IP}:2375
+    DOCKER_DRIVER: overlay2
+  script:
+    - echo "${AND_DOCKER_REGISTRY_RW_PASS}" | docker login -u ${AND_REGESTRY_USER_RW} ${AND_DOCKER_REGISTRY_NAME} --password-stdin
+    - docker build --tag ${AND_DOCKER_REGISTRY_NAME}/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_REF_SLUG} .
+    - docker push ${AND_DOCKER_REGISTRY_NAME}/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_REF_SLUG}
+
+docker:dev:
+  extends: .docker-template
+  environment:
+    name: dev
+  dependencies:
+    - package:dev
+  only:
+    - develop
+
+docker:prod:
+  extends: .docker-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  dependencies:
+    - package:prod
+  only:
+    - main
+
+.deploy-template:
+  stage: deploy
+  image: docker:stable
+  variables:
+    DOCKER_HOST: tcp://${SERVER_IP}:2375
+  before_script:
+    - echo "${AND_DOCKER_REGISTRY_RW_PASS}" | docker login -u "${AND_REGESTRY_USER_RW}" "${AND_DOCKER_REGISTRY_NAME}" --password-stdin
+    - docker stop "${CI_PROJECT_NAME}" || true
+    - docker rm -v -f "${CI_PROJECT_NAME}" || true
+    - docker pull "${AND_DOCKER_REGISTRY_NAME}/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_REF_SLUG}"
+  script:
+    - |
+      echo "DMS_ENV path: ${DMS_ENV}"
+      test -n "${DMS_ENV}"
+      test -f "${DMS_ENV}"
+      echo "--- DMS_ENV content (first 50 lines) ---"
+      sed -n '1,50p' "${DMS_ENV}"
+
+      docker run -d \
+        --restart=always \
+        --name "${CI_PROJECT_NAME}" \
+        --env-file "${DMS_ENV}" \
+        --env "SERVER_IP=${SERVER_IP}" \
+        --publish 7004:8084 \
+        -v /var/log/dms-insurance:/app/logs \
+        --network my_care \
+        "${AND_DOCKER_REGISTRY_NAME}/${CI_PROJECT_PATH_SLUG}:${CI_COMMIT_REF_SLUG}"
+  after_script:
+    - docker system prune -af --filter "label!=keep"
+  resource_group: ${CI_ENVIRONMENT_SLUG}
+
+
+deploy:dev:
+  extends: .deploy-template
+  environment:
+    name: dev
+  only:
+    - develop
+
+deploy:prod:
+  extends: .deploy-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  only:
+    - main
+  when: manual
+
+.migration-template:
+  image: liquibase/liquibase:4.5.0
+  stage: migration
+  before_script:
+    - mkdir -p ${CHANGELOG_DIR}
+    - cp -r ${RESOURCES_DIR}/${CHANGELOG_DIR}/* ${CHANGELOG_DIR}
+
+.migration_verify-template:
+  extends: .migration-template
+  script:
+    - liquibase $DB_MIGRATION_PARAMS status --verbose
+    - liquibase $DB_MIGRATION_PARAMS validate
+  allow_failure: false
+
+migration_verify:dev:
+  extends: .migration_verify-template
+  environment:
+    name: dev
+  only:
+    - develop
+    - merge_requests
+
+migration_verify:prod:
+  extends: .migration_verify-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  only:
+    - main
+
+.migration_update-template:
+  extends: .migration-template
+  script:
+    - liquibase $DB_MIGRATION_PARAMS update
+
+migration_update:dev:
+  extends: .migration_update-template
+  environment:
+    name: dev
+  needs: [ "migration_verify:dev" ]
+  only:
+    - develop
+
+migration_update:prod:
+  extends: .migration_update-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  needs: [ "migration_verify:prod" ]
+  only:
+    - main
+
+.migration_rollback-template:
+  extends: .migration-template
+  script:
+    - liquibase $DB_MIGRATION_PARAMS rollbackCount $COUNT
+
+migration_rollback:dev:
+  extends: .migration_rollback-template
+  environment:
+    name: dev
+  needs: [ "migration_verify:dev" ]
+  when: manual
+  only:
+    - develop
+
+migration_rollback:prod:
+  extends: .migration_rollback-template
+  tags:
+    - prod-java-runner
+  environment:
+    name: prod
+  needs: [ "migration_verify:prod" ]
+  when: manual
+  only:
+    - main
+
+migration_clearChecksums:dev:
+  extends: .migration-template
+  script:
+    - liquibase $DB_MIGRATION_PARAMS clearCheckSums
+  environment:
+    name: dev
+  when: manual
+  only:
+    refs:
+      - develop
+      - merge_requests

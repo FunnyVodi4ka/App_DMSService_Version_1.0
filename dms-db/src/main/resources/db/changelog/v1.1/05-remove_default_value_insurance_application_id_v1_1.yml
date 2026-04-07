@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove_default_value_insurance_application_id_v1_1
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            schemaName: dms_service
+            tableName: insurance_applications
+        - columnExists:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: insurance_application_id
+      changes:
+        - dropDefaultValue:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columnName: insurance_application_id
+            columnDataType: uuid

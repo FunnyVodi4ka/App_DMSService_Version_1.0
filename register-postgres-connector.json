@@ -1,0 +1,53 @@
+{
+  "name": "dms-outbox-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+
+    "database.hostname": "dms_db",
+    "database.port": "5432",
+    "database.user": "admin",
+    "database.password": "admin",
+    "database.dbname": "dms_db",
+    "database.server.name": "dms-postgres-server",
+    "schema.include.list": "dms_service",
+    "table.include.list": "dms_service.outbox",
+
+    "plugin.name": "pgoutput",
+    "slot.name": "dms_outbox_slot",
+    "publication.name": "dbz_dms_outbox_pub",
+    "publication.autocreate.mode": "filtered",
+    "slot.drop.on.stop": false,
+    "snapshot.mode": "initial",
+    "snapshot.locking.mode": "none",
+    "topic.prefix": "dms-postgres-server",
+
+    "transforms": "outbox",
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.route.by.field": "topic",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}",
+    "transforms.outbox.table.field.event.key": "aggregate_id",
+    "transforms.outbox.table.field.event.id": "outbox_id",
+    "transforms.outbox.table.field.event.payload": "payload",
+    "transforms.outbox.table.expand.json.payload": "true",
+    "transforms.outbox.table.field.event.headers": "headers",
+    "transforms.outbox.table.expand.json.headers": "true",
+    "transforms.outbox.table.fields.additional.placement": "outbox_id:header:outbox_id,aggregate_id:header:aggregateId,aggregate_type:header:aggregateType, headers:header:headers",
+
+    "errors.tolerance": "none",
+    "errors.log.enable": true,
+    "errors.log.include.messages": true,
+    "errors.deadletterqueue.topic.name": "dlq_dms_outbox_events",
+    "errors.deadletterqueue.context.headers.enable": true,
+    "errors.retry.delay.max.ms": 60000,
+    "errors.retry.timeout": -1,
+    "connection.attempts": 20,
+    "connection.backoff.ms": 10000,
+    "connection.keep.alive": true,
+    "connection.keep.alive.interval.ms": 60000,
+    "connection.keep.alive.timeout.ms": 60000,
+
+    "poll.interval.ms": 500,
+    "heartbeat.interval.ms": 10000
+  }
+}

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: update_and_set_default_creation_date
+      author: Ruslan_Radevich
+      changes:
+        - addDefaultValue:
+            tableName: dms_insurance
+            columnName: creation_date
+            defaultValueComputed: CURRENT_TIMESTAMP

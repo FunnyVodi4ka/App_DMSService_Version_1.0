@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-owner-insurance_contract_status
+      author: Ivan Sakharov
+
+      changes:
+        - sql:
+            sql: | 
+              ALTER TYPE insurance_contract_status OWNER TO admin;

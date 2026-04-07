@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_debezium_heartbeat_table_v1_1
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: dms_service
+                tableName: debezium_heartbeat
+      changes:
+        - createTable:
+            schemaName: dms_service
+            tableName: debezium_heartbeat
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: ts
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+      comment: "Creating a service table for Debezium heartbeat messages (protection against WAL overflow)."
+
+  - changeSet:
+      id: grant_permissions_debezium_heartbeat_v1_1
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            schemaName: dms_service
+            tableName: debezium_heartbeat
+      changes:
+        - sql:
+            sql: "GRANT INSERT, UPDATE ON dms_service.debezium_heartbeat TO admin;"

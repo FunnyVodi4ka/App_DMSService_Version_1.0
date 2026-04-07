@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: addUuidGeneration
+      author: Azimov Ruslan
+      changes:
+        - sql:
+            sql: ALTER TABLE dms_insurance ALTER COLUMN dms_insurance_id SET DEFAULT gen_random_uuid();
+

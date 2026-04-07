@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04-add-version-to-insurance-applications.yml
+      author: Ivan Sergienko
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            schemaName: dms_service
+            tableName: insurance_applications
+        - not:
+            - columnExists:
+                schemaName: dms_service
+                tableName: insurance_applications
+                columnName: version
+      changes:
+        - addColumn:
+            schemaName: dms_service
+            tableName: insurance_applications
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

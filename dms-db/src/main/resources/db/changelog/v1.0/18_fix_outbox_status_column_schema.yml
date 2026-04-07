@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix_outbox_status_column_schema
+      author: Nikolai Fufaev
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE outbox 
+              ALTER COLUMN status TYPE dms_service.outbox_status 
+              USING status::text::dms_service.outbox_status;
